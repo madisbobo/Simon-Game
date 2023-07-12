@@ -1,32 +1,40 @@
-// Pattern array initialized
-var pattern = [];
-var playerPattern = [];
-var gameLvl = 1;
-var gameStarted = false;
 
-// Color object/dict initialized
-var cardColor = {
+// ---------------------- INITIAL VALUES ---------------------- //
+
+// Initialize starting values and constants
+let pattern = [];
+let playerPattern = [];
+let gameLevel = 0;
+let gameStarted = false;
+const h1 = $("h1");
+const body = $("body");
+
+const cardColor = {
     1: "green",
     2: "red",
     3: "yellow",
     4: "blue"
 }
 
+// ---------------------- GAME ---------------------- //
+
 // Start the game
-$("body").keydown(function () {
+$(document).keydown(() => {
     if (!gameStarted) {
         gameStarted = true;
-        $("h1").text(`Level ${gameLvl}`);
-        addNewColor();
+        levelUp();  
+        addRandomColorToPattern(); 
         gamePlay();
     }
 });
 
 
+// ---------------------- FUNCTIONS ---------------------- //
+
 // Gameplay
 function gamePlay() {
     // Listen to the incoming clicks
-    $(".btn").off("click").click(function (e) {
+    $(".btn").off("click").click((e) => {
         playerPattern.push(e.target.id);
 
         // Check if the last elements are the same
@@ -36,18 +44,19 @@ function gamePlay() {
             // If the patterns are the same length, level up
             if (pattern.length === playerPattern.length) {
                 levelUp()
-                addNewColor();
+                addRandomColorToPattern();
             }
+        // If wrong pattern, game over
         } else {
             flashCard(e.target.id);
             gameOver();
         }
-
     });
 }
 
 
-function addNewColor() {
+// Add new color element to the color pattern
+function addRandomColorToPattern() {
     setTimeout(() => {
         playerPattern = [];
         // Generate random number between 1-4
@@ -57,9 +66,6 @@ function addNewColor() {
         var randColor = cardColor[randNr];
         pattern.push(randColor);
         flashCard(randColor);
-
-        console.log("computer:" + JSON.stringify(pattern));
-        console.log("player:" + JSON.stringify(playerPattern));
     }, 1000);
 
 }
@@ -76,27 +82,31 @@ function flashCard(color) {
 }
 
 
+// Level up the gameLevel and update the h1 element
 function levelUp() {
-    gameLvl++;
-    $("h1").text(`Level ${gameLvl}`);
+    gameLevel++;
+    h1.text(`Level ${gameLevel}`);
 }
 
 
+// When game over, play the audio, animation and reset variables 
 function gameOver() {
-    $("body").addClass("game-over");
+    body.addClass("game-over");
     setTimeout(() => {
-        $("body").removeClass("game-over");
+        body.removeClass("game-over");
     }, 250);
 
-    $("h1").text("Game Over, Press Any Key to Restart");
+    h1.text("Game Over, Press Any Key to Restart");
     var audio = new Audio("sounds/wrong.mp3")
     audio.play();
     reset();
     
 }
 
+
+// Resetting the variables
 function reset() {
-    gameLvl = 1;
+    gameLevel = 0;
     pattern = [];
     playerPattern = [];
     gameStarted = false;
